@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分流跳轉範例</title>
+    <style>
+        body { margin:0; padding:0; display:flex; justify-content:center; align-items:center; height:100vh; background:transparent; font-family:'Arial',sans-serif;}
+        .loading-container { text-align:center; }
+        .loading-animation { width:300px; height:auto; margin-bottom:20px;}
+        .progress-container { width:300px; height:10px; background-color:#f0f0f0; border-radius:10px; overflow:hidden; margin-bottom:10px;}
+        .progress-bar { height:100%; width:0%; background:linear-gradient(to right,#FFB6C1,#FF69B4); border-radius:10px; transition: width 0.3s ease;}
+        .progress-text { font-size:16px; color:#333;}
+        #goButton { display:none; margin-top:10px; padding:10px 20px; font-size:16px; background:linear-gradient(to right,#FFB6C1,#FF69B4); border:none; border-radius:10px; color:white; cursor:pointer;}
+        #notionTip { display:none; color:red; margin-top:10px;}
+        #copyBtn { display:none; margin-top:10px; padding:6px 14px; }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <img src="https://i.pinimg.com/originals/85/e0/10/85e010f1e37a5ef9e7ca369fd089f28a.gif" class="loading-animation">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">載入中... 0%</div>
+        <button id="goButton">點我進入新頁面</button>
+        <div id="notionTip">請用瀏覽器開啟本頁以完成跳轉。</div>
+        <button id="copyBtn">複製本頁連結</button>
+    </div>
+    <script>
+        const appLink = 'https://www.notion.so/239372b94fd18000a63af6b50250398a?source=copy_link';
+        const browserLink = 'https://tattered-podium-f9a.notion.site/239372b94fd18000a63af6b50250398a';
+
+        function getEnvType() {
+            const ua = navigator.userAgent;
+            if (/Notion/i.test(ua)) return 'notion-app';
+            if (/Line/i.test(ua)) return 'line-app';
+            if (/FBAV|FBAN|FB_IAB|FB4A/i.test(ua)) return 'facebook-app';
+            if (/MicroMessenger/i.test(ua)) return 'wechat-app';
+            if (/Instagram/i.test(ua)) return 'instagram-app';
+            if (/Twitter/i.test(ua)) return 'twitter-app';
+            if (/Android/i.test(ua)) return 'android-browser';
+            if (/iPhone|iPad|iPod/i.test(ua)) return 'ios-browser';
+            if (/Windows NT/i.test(ua)) return 'windows-browser';
+            if (/Macintosh/i.test(ua)) return 'mac-browser';
+            return 'web-browser';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const goButton = document.getElementById('goButton');
+            const notionTip = document.getElementById('notionTip');
+            const copyBtn = document.getElementById('copyBtn');
+
+            let envType = getEnvType();
+            let targetUrl = browserLink;
+            let showTip = false;
+
+            // 決定分流
+            if (envType === 'notion-app') {
+                targetUrl = appLink;
+            } else if (['line-app','facebook-app','wechat-app','instagram-app','twitter-app'].includes(envType)) {
+                targetUrl = null;
+                showTip = true;
+            }
+
+            let progress = 0;
+            let loading = false;
+            function simulateLoading() {
+                if (loading) return;
+                loading = true;
+                function updateProgress() {
+                    const increment = Math.floor(Math.random() * 5) + 1;
+                    progress += increment;
+                    if (progress >= 100) {
+                        progress = 100;
+                        progressBar.style.width = progress + '%';
+                        progressText.textContent = '載入完成! 100%';
+                        // 按鈕或提示
+                        if (targetUrl) {
+                            goButton.style.display = 'inline-block';
+                            notionTip.style.display = 'none';
+                            copyBtn.style.display = 'none';
+                        } else {
+                            goButton.style.display = 'none';
+                            notionTip.style.display = 'block';
+                            copyBtn.style.display = 'inline-block';
+                        }
+                        loading = false;
+                        return;
+                    }
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = '載入中... ' + progress + '%';
+                    setTimeout(updateProgress, (100 - progress > 50) ? 100 : 50);
+                }
+                updateProgress();
+            }
+
+            goButton.addEventListener('click', function () {
+                window.open(targetUrl, '_blank');
+            });
+            copyBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(location.href);
+                copyBtn.textContent = '已複製';
+                setTimeout(() => copyBtn.textContent = '複製本頁連結', 2000);
+            });
+
+            setTimeout(simulateLoading, 500);
+
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    progress = 0;
+                    progressBar.style.width = '0%';
+                    progressText.textContent = '載入中... 0%';
+                    goButton.style.display = 'none';
+                    notionTip.style.display = 'none';
+                    copyBtn.style.display = 'none';
+                    setTimeout(simulateLoading, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
