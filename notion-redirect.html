@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Notion 分流跳轉</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.onload = function() {
+      const ua = navigator.userAgent || '';
+      // 判斷是否為 Notion App
+      if (ua.includes('Notion')) {
+        // 應用程式開啟
+        window.location.href = "https://www.notion.so/239372b94fd18000a63af6b50250398a?source=copy_link";
+      } else {
+        // 一般瀏覽器開啟
+        window.location.href = "https://tattered-podium-f9a.notion.site/239372b94fd18000a63af6b50250398a";
+      }
+    }
+  </script>
+</head>
+<body>
+  <p>正在分流跳轉中，請稍候...</p>
+</body>
+</html>
