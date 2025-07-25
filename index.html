@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你好 宇宙霹靂細肩帶之槌</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: transparent;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .loading-container {
+            text-align: center;
+        }
+
+        .loading-animation {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            width: 300px;
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #FFB6C1, #FF69B4);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 16px;
+            color: #333;
+        }
+
+        #goButton {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: linear-gradient(to right, #FFB6C1, #FF69B4);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-container">
+        <img src="https://i.pinimg.com/originals/85/e0/10/85e010f1e37a5ef9e7ca369fd089f28a.gif"
+            class="loading-animation">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">載入中... 0%</div>
+        <button id="goButton">點我進入新頁面</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const goButton = document.getElementById('goButton');
+            const targetUrl = 'https://tattered-podium-f9a.notion.site/239372b94fd18000a63af6b50250398a';
+
+            let progress = 0;
+            let loading = false;
+
+            // 模擬載入進度，根據網速調整
+            function simulateLoading() {
+                if (loading) return;
+                loading = true;
+
+                function updateProgress() {
+                    // 每次增加1-5%的進度，根據網速調整
+                    const increment = Math.floor(Math.random() * 5) + 1;
+                    progress += increment;
+
+                    if (progress >= 100) {
+                        progress = 100;
+                        progressBar.style.width = progress + '%';
+                        progressText.textContent = '載入完成! 100%';
+
+                        // 顯示按鈕，讓使用者自己點擊跳轉（開新分頁）
+                        goButton.style.display = 'inline-block';
+                        loading = false;
+                        return;
+                    }
+
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = '載入中... ' + progress + '%';
+
+                    // 根據進度調整下一次更新的時間間隔，模擬網速差異
+                    const nextUpdateTime = (100 - progress > 50) ? 100 : 50;
+                    setTimeout(updateProgress, nextUpdateTime);
+                }
+
+                updateProgress();
+            }
+            goButton.addEventListener('click', function () {
+                window.open(targetUrl, '_blank'); // _blank 會在新分頁打開
+            });
+
+            // 初始化第一次載入
+            setTimeout(simulateLoading, 500);
+
+            // 當分頁回來時重置
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    // 重置狀態
+                    progress = 0;
+                    progressBar.style.width = '0%';
+                    progressText.textContent = '載入中... 0%';
+                    goButton.style.display = 'none';
+                    setTimeout(simulateLoading, 500);
+                }
+            });
+        });
+    </script>
+</body>
